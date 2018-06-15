@@ -9,21 +9,15 @@ var argv = yargs.options({
         description: 'address to fetch weather',
         string: true
     }
+
 }).help().alias('help','h').argv
+
 // https://api.darksky.net/forecast/56f8a400067dd9b659ad5e4e2835131e/13.0826802,80.2707184
-geocode.geocodeAddress(encodeURIComponent(argv.address),(error,result)=> {
-    if(error) {
-        console.log(error)
-    } 
-    else if(result) {
-        weather.getWeather(result.latitude,result.longitude, (error,weatherObj)=> {
-            if(error) {
-                console.log(error)
-            } else if(result) {
-                console.log(`It is currently ${weatherObj.temperature}. Weather will be ${weatherObj.summary}`)
-            }
-        })     
-    }
 
-
+geocode.geoCode(encodeURIComponent(argv.address)).then((location) => {
+    return weather.checkWeather(location.latitude,location.longitude)
+}).then((weather) => {
+   console.log(`It is currently ${weather.temperature}. Weather will be ${weather.summary}`) 
+}).catch((error)=> {
+    console.log(error)
 })
